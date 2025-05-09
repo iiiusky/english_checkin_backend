@@ -7,8 +7,6 @@
 package wire
 
 import (
-	"github.com/google/wire"
-	"github.com/spf13/viper"
 	"english_checkin_backend/internal/handler"
 	"english_checkin_backend/internal/job"
 	"english_checkin_backend/internal/repository"
@@ -19,6 +17,8 @@ import (
 	"english_checkin_backend/pkg/log"
 	"english_checkin_backend/pkg/server/http"
 	"english_checkin_backend/pkg/sid"
+	"github.com/google/wire"
+	"github.com/spf13/viper"
 )
 
 // Injectors from wire.go:
@@ -38,7 +38,16 @@ func NewWire(viperViper *viper.Viper, logger *log.Logger) (*app.App, func(), err
 	userRepository := repository.NewUserRepository(repositoryRepository)
 	userService := service.NewUserService(serviceService, userRepository)
 	userHandler := handler.NewUserHandler(handlerHandler, userService)
-	httpServer := server.NewHTTPServer(logger, viperViper, jwtJWT, syncedEnforcer, adminHandler, userHandler)
+	studentRepository := repository.NewStudentRepository(repositoryRepository)
+	studentService := service.NewStudentService(serviceService, studentRepository)
+	studentHandler := handler.NewStudentHandler(handlerHandler, studentService)
+	studentProgressRepository := repository.NewStudentProgressRepository(repositoryRepository, db)
+	studentProgressService := service.NewStudentProgressService(serviceService, studentProgressRepository)
+	studentProgressHandler := handler.NewStudentProgressHandler(handlerHandler, studentProgressService)
+	taskRepository := repository.NewTaskRepository(repositoryRepository, db)
+	taskService := service.NewTaskService(serviceService, taskRepository)
+	taskHandler := handler.NewTaskHandler(handlerHandler, taskService)
+	httpServer := server.NewHTTPServer(logger, viperViper, jwtJWT, syncedEnforcer, adminHandler, userHandler, studentHandler, studentProgressHandler, taskHandler)
 	jobJob := job.NewJob(transaction, logger, sidSid)
 	userJob := job.NewUserJob(jobJob, userRepository)
 	jobServer := server.NewJobServer(logger, userJob)
@@ -49,11 +58,11 @@ func NewWire(viperViper *viper.Viper, logger *log.Logger) (*app.App, func(), err
 
 // wire.go:
 
-var repositorySet = wire.NewSet(repository.NewDB, repository.NewRepository, repository.NewTransaction, repository.NewUserRepository, repository.NewCasbinEnforcer, repository.NewAdminRepository)
+var repositorySet = wire.NewSet(repository.NewDB, repository.NewRepository, repository.NewTransaction, repository.NewUserRepository, repository.NewCasbinEnforcer, repository.NewAdminRepository, repository.NewStudentRepository, repository.NewStudentProgressRepository, repository.NewTaskRepository)
 
-var serviceSet = wire.NewSet(service.NewService, service.NewUserService, service.NewAdminService)
+var serviceSet = wire.NewSet(service.NewService, service.NewUserService, service.NewAdminService, service.NewStudentService, service.NewStudentProgressService, service.NewTaskService)
 
-var handlerSet = wire.NewSet(handler.NewHandler, handler.NewUserHandler, handler.NewAdminHandler)
+var handlerSet = wire.NewSet(handler.NewHandler, handler.NewUserHandler, handler.NewAdminHandler, handler.NewStudentHandler, handler.NewStudentProgressHandler, handler.NewTaskHandler)
 
 var jobSet = wire.NewSet(job.NewJob, job.NewUserJob)
 

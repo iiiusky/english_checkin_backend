@@ -1,29 +1,30 @@
 package service
 
 import (
-    "context"
+	"context"
 	"english_checkin_backend/internal/model"
 	"english_checkin_backend/internal/repository"
 )
 
 type CheckInService interface {
-	GetCheckIn(ctx context.Context, id int64) (*model.CheckIn, error)
+	GetCheckIn(ctx context.Context, id int64) (*model.Task, error)
 }
+
 func NewCheckInService(
-    service *Service,
-    checkInRepository repository.CheckInRepository,
+	service *Service,
+	checkInRepository repository.DailyTaskRepository,
 ) CheckInService {
 	return &checkInService{
-		Service:        service,
+		Service:           service,
 		checkInRepository: checkInRepository,
 	}
 }
 
 type checkInService struct {
 	*Service
-	checkInRepository repository.CheckInRepository
+	checkInRepository repository.DailyTaskRepository
 }
 
-func (s *checkInService) GetCheckIn(ctx context.Context, id int64) (*model.CheckIn, error) {
-	return s.checkInRepository.GetCheckIn(ctx, id)
+func (s *checkInService) GetCheckIn(ctx context.Context, id int64) (*model.Task, error) {
+	return nil, nil
 }

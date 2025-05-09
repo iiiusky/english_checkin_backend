@@ -4,8 +4,6 @@
 package wire
 
 import (
-	"github.com/google/wire"
-	"github.com/spf13/viper"
 	"english_checkin_backend/internal/handler"
 	"english_checkin_backend/internal/job"
 	"english_checkin_backend/internal/repository"
@@ -16,6 +14,8 @@ import (
 	"english_checkin_backend/pkg/log"
 	"english_checkin_backend/pkg/server/http"
 	"english_checkin_backend/pkg/sid"
+	"github.com/google/wire"
+	"github.com/spf13/viper"
 )
 
 var repositorySet = wire.NewSet(
@@ -26,18 +26,27 @@ var repositorySet = wire.NewSet(
 	repository.NewUserRepository,
 	repository.NewCasbinEnforcer,
 	repository.NewAdminRepository,
+	repository.NewStudentRepository,
+	repository.NewStudentProgressRepository,
+	repository.NewTaskRepository,
 )
 
 var serviceSet = wire.NewSet(
 	service.NewService,
 	service.NewUserService,
 	service.NewAdminService,
+	service.NewStudentService,
+	service.NewStudentProgressService,
+	service.NewTaskService,
 )
 
 var handlerSet = wire.NewSet(
 	handler.NewHandler,
 	handler.NewUserHandler,
 	handler.NewAdminHandler,
+	handler.NewStudentHandler,
+	handler.NewStudentProgressHandler,
+	handler.NewTaskHandler,
 )
 
 var jobSet = wire.NewSet(

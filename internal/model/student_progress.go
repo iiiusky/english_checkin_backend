@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 type StudentProgress struct {
 	gorm.Model
-	StudentId           int     `gorm:"column:student_id"`
-	TaskId              int     `gorm:"column:task_id"`
+	StudentId           string  `gorm:"column:student_id"`
+	TaskId              string  `gorm:"column:task_id"`
 	CheckInAt           int     `gorm:"column:checkin_at"`
 	AudioUrl            string  `gorm:"column:audio_url"`
 	AiScore             float64 `gorm:"column:ai_score;default:0;comment:Overall score provided by the AI evaluation"`
@@ -17,6 +17,12 @@ type StudentProgress struct {
 	TeacherScore        float64 `gorm:"column:teacher_score;default:0;comment:Score provided by a human teacher, if applicable"`
 	TeacherFeedback     string  `gorm:"column:teacher_feedback;type:text;comment:Feedback provided by a human teacher, if applicable"`
 	TeacherId           string  `gorm:"column:teacher_id;type:varchar(255);comment:Foreign key referencing the teacher's id in an 'account' or 'teacher' table, if applicable"`
+	
+	// 关联字段，不存储在数据库中
+	StudentName      string `gorm:"-"` // 学生姓名，从student表关联获取
+	TaskEnglishText  string `gorm:"-"` // 任务英文内容，从task表关联获取
+	TaskChineseText  string `gorm:"-"` // 任务中文内容，从task表关联获取
+	TaskType         string `gorm:"-"` // 任务类型，从task表关联获取
 }
 
 func (m *StudentProgress) TableName() string {

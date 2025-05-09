@@ -1,13 +1,6 @@
 package server
 
 import (
-	"github.com/casbin/casbin/v2"
-	"github.com/gin-contrib/static"
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	nethttp "net/http"
 	"english_checkin_backend/docs"
 	"english_checkin_backend/internal/handler"
 	"english_checkin_backend/internal/middleware"
@@ -15,6 +8,14 @@ import (
 	"english_checkin_backend/pkg/log"
 	"english_checkin_backend/pkg/server/http"
 	"english_checkin_backend/web"
+	nethttp "net/http"
+
+	"github.com/casbin/casbin/v2"
+	"github.com/gin-contrib/static"
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func NewHTTPServer(
@@ -24,6 +25,9 @@ func NewHTTPServer(
 	e *casbin.SyncedEnforcer,
 	adminHandler *handler.AdminHandler,
 	userHandler *handler.UserHandler,
+	studentHandler *handler.StudentHandler,
+	studentProgress *handler.StudentProgressHandler,
+	taskHandler *handler.TaskHandler,
 ) *http.Server {
 	gin.SetMode(gin.DebugMode)
 	s := http.NewServer(
@@ -94,6 +98,20 @@ func NewHTTPServer(
 			strictAuthRouter.POST("/admin/api", adminHandler.ApiCreate)
 			strictAuthRouter.PUT("/admin/api", adminHandler.ApiUpdate)
 			strictAuthRouter.DELETE("/admin/api", adminHandler.ApiDelete)
+
+			strictAuthRouter.GET("/english_check_in/students", studentHandler.ListStudents)
+			strictAuthRouter.GET("/english_check_in/student", studentHandler.GetStudent)
+			strictAuthRouter.PUT("/english_check_in/student", studentHandler.UpdateStudent)
+
+			strictAuthRouter.GET("/english_check_in/tasks", taskHandler.ListTasks)
+			strictAuthRouter.GET("/english_check_in/task", taskHandler.GetTask)
+			strictAuthRouter.PUT("/english_check_in/task", taskHandler.UpdateTask)
+			strictAuthRouter.POST("/english_check_in/task", taskHandler.CreateTask)
+			strictAuthRouter.DELETE("/english_check_in/task", taskHandler.DeleteTask)
+
+			strictAuthRouter.GET("/english_check_in/student_progress", studentProgress.GetStudentProgress)
+			strictAuthRouter.GET("/english_check_in/student_progress/list", studentProgress.ListStudentProgress)
+			strictAuthRouter.GET("/english_check_in/student_progress/:id", studentProgress.GetStudentProgressById)
 
 		}
 	}
