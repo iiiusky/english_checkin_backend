@@ -5,7 +5,6 @@ import (
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"gorm.io/plugin/soft_delete"
 )
 
 type Task struct {
@@ -21,7 +20,7 @@ type Task struct {
 	UpdatedAtMs     int64  `gorm:"column:updatedAt;type:bigint;comment:Last update timestamp as milliseconds since epoch." json:"updated_at_ms"`
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	DeletedAt       soft_delete.DeletedAt `gorm:"index"`
+	DeletedAt       gorm.DeletedAt `gorm:"index"`
 }
 
 func (m *Task) TableName() string {
